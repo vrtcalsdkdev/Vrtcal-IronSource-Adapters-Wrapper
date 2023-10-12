@@ -6,6 +6,7 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     
     var appLogger: Logger
     var sdkEventsLogger: Logger
+    var sdk = SDK.ironSource
     var delegate: AdapterWrapperDelegate
     
     required init(
@@ -19,8 +20,6 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     }
     
     func initializeSdk() {
-        appLogger.log()
-        
         //Only handle interstitial because IronSource doesn't support mediation of their banners
         IronSource.setInterstitialDelegate(self)
         IronSource.setRewardedVideoDelegate(self)
@@ -40,7 +39,7 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
                 IronSource.loadRewardedVideo()
                 
             case .banner:
-                fatalError("Banner not supported for Ironsource Adapter")
+                sdkEventsLogger.log("Banner not supported for Ironsource Adapter")
 
             case .showDebugView:
                 appLogger.log("IronSource doesn't have a debug view")
@@ -59,6 +58,10 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
         }
 
         return false
+    }
+    
+    func destroyInterstitial() {
+        
     }
 }
 
