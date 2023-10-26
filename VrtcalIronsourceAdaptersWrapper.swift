@@ -29,9 +29,9 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
         IronSource.initWithAppKey("133bdf7c9", adUnits:[IS_INTERSTITIAL, IS_REWARDED_VIDEO], delegate: self)
     }
     
-    func handle(vrtcalAsSecondaryConfig: VrtcalAsSecondaryConfig) {
+    func handle(adTechConfig: AdTechConfig) {
         
-        switch vrtcalAsSecondaryConfig.placementType {
+        switch adTechConfig.placementType {
             case .interstitial:
                 IronSource.loadInterstitial()
                 
