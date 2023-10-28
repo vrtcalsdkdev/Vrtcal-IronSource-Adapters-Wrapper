@@ -20,17 +20,20 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     }
     
     func initializeSdk() {
+        sdkEventsLogger.log()
+        
         //Only handle interstitial because IronSource doesn't support mediation of their banners
         IronSource.setInterstitialDelegate(self)
         IronSource.setRewardedVideoDelegate(self)
         IronSource.setRewardedVideoManualDelegate(self)
         IronSource.add(self)
         
+        // Alternate: 133bd4b31
         IronSource.initWithAppKey("133bdf7c9", adUnits:[IS_INTERSTITIAL, IS_REWARDED_VIDEO], delegate: self)
     }
     
     func handle(adTechConfig: AdTechConfig) {
-        
+        sdkEventsLogger.log("adTechConfig: \(adTechConfig)")
         switch adTechConfig.placementType {
             case .interstitial:
                 IronSource.loadInterstitial()
