@@ -9,6 +9,10 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     var sdk = SDK.ironSource
     var delegate: AdapterWrapperDelegate
     
+    var levelPlayInterstitialDelegateWrapper: LevelPlayInterstitialDelegateWrapper
+    var levelPlayRewardedVideoDelegateWraper: LevelPlayRewardedVideoDelegateWraper
+    var levelPlayRewardedVideoManualDelegateWrapper: LevelPlayRewardedVideoManualDelegateWrapper
+    
     required init(
         appLogger: Logger,
         sdkEventsLogger: Logger,
@@ -17,15 +21,26 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
         self.appLogger = appLogger
         self.sdkEventsLogger = sdkEventsLogger
         self.delegate = delegate
+        
+        levelPlayInterstitialDelegateWrapper = LevelPlayInterstitialDelegateWrapper(
+            sdkEventsLogger: sdkEventsLogger
+        )
+
+        levelPlayRewardedVideoDelegateWraper = LevelPlayRewardedVideoDelegateWraper(
+            sdkEventsLogger: sdkEventsLogger
+        )
+        
+        levelPlayRewardedVideoManualDelegateWrapper = LevelPlayRewardedVideoManualDelegateWrapper(
+            sdkEventsLogger: sdkEventsLogger
+        )
     }
     
     func initializeSdk() {
         sdkEventsLogger.log()
-        
-        //Only handle interstitial because IronSource doesn't support mediation of their banners
-        IronSource.setInterstitialDelegate(self)
-        IronSource.setRewardedVideoDelegate(self)
-        IronSource.setRewardedVideoManualDelegate(self)
+
+        IronSource.setLevelPlayInterstitialDelegate(levelPlayInterstitialDelegateWrapper)
+        IronSource.setLevelPlayRewardedVideoDelegate(levelPlayRewardedVideoDelegateWraper)
+        IronSource.setLevelPlayRewardedVideoManualDelegate(levelPlayRewardedVideoManualDelegateWrapper)
         IronSource.add(self)
         
         // Alternate: 133bd4b31
@@ -64,7 +79,8 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     }
     
     func destroyInterstitial() {
-        
+        // IronSource's interstitials aren't class instances like other SDKs, so we don't
+        // need to manually destroy them.
     }
 }
 
@@ -74,117 +90,6 @@ extension VrtcalIronsourceAdaptersWrapper: ISInitializationDelegate {
         sdkEventsLogger.log("IronSource Initialized")
     }
 }
-
-extension VrtcalIronsourceAdaptersWrapper: ISBannerDelegate {
-    
-    func bannerDidLoad(_ bannerView: ISBannerView!) {
-        sdkEventsLogger.log("IronSource bannerDidLoad")
-    }
-    
-    func bannerDidFailToLoadWithError(_ error: Error!) {
-        appLogger.log("error: \(String(describing: error))")
-        sdkEventsLogger.log("IronSource bannerDidFailToLoadWithError")
-    }
-    
-    func didClickBanner() {
-        sdkEventsLogger.log("IronSource didClickBanner")
-    }
-    
-    func bannerWillPresentScreen() {
-        sdkEventsLogger.log("IronSource bannerWillPresentScreen")
-    }
-    
-    func bannerDidDismissScreen() {
-        sdkEventsLogger.log("IronSource bannerDidDismissScreen")
-    }
-    
-    func bannerWillLeaveApplication() {
-        sdkEventsLogger.log("IronSource bannerWillLeaveApplication")
-    }
-    
-    func bannerDidShow() {
-        sdkEventsLogger.log("IronSource bannerDidShow")
-    }
-}
-    
-extension VrtcalIronsourceAdaptersWrapper: ISInterstitialDelegate {
-    
-    func interstitialDidLoad() {
-        sdkEventsLogger.log("IronSource interstitialDidLoad")
-    }
-    
-    func interstitialDidFailToLoadWithError(_ error: Error!) {
-        sdkEventsLogger.log("IronSource interstitialDidFailToLoadWithError: \(String(describing:error))")
-    }
-    
-    func interstitialDidOpen() {
-        sdkEventsLogger.log("IronSource interstitialDidOpen")
-    }
-    
-    func interstitialDidClose() {
-        sdkEventsLogger.log("IronSource interstitialDidClose")
-    }
-    
-    func interstitialDidShow() {
-        sdkEventsLogger.log("IronSource interstitialDidShow")
-    }
-    
-    func interstitialDidFailToShowWithError(_ error: Error!) {
-        sdkEventsLogger.log("IronSource interstitialDidFailToShowWithError")
-    }
-    
-    func didClickInterstitial() {
-        sdkEventsLogger.log("IronSource didClickInterstitial")
-    }
-}
-
-    
-extension VrtcalIronsourceAdaptersWrapper: ISRewardedVideoDelegate {
-    
-    func rewardedVideoHasChangedAvailability(_ available: Bool) {
-        sdkEventsLogger.log("IronSource rewardedVideoHasChangedAvailability: \(available)")
-    }
-
-    func didReceiveReward(forPlacement placementInfo: ISPlacementInfo!) {
-        sdkEventsLogger.log("IronSource didReceiveReward forPlacement: \(String(describing: placementInfo))")
-    }
-
-    func rewardedVideoDidFailToShowWithError(_ error: Error!) {
-        sdkEventsLogger.log("IronSource rewardedVideoDidFailToShowWithError: \(String(describing: error))")
-    }
-
-    func rewardedVideoDidOpen() {
-        sdkEventsLogger.log("IronSource rewardedVideoDidOpen")
-    }
-
-    func rewardedVideoDidClose() {
-        sdkEventsLogger.log("IronSource rewardedVideoDidClose")
-    }
-
-    func rewardedVideoDidStart() {
-        sdkEventsLogger.log("IronSource rewardedVideoDidStart")
-    }
-
-    func rewardedVideoDidEnd() {
-        sdkEventsLogger.log("IronSource rewardedVideoDidEnd")
-    }
-
-    func didClickRewardedVideo(_ placementInfo: ISPlacementInfo!) {
-        sdkEventsLogger.log("IronSource didClickRewardedVideo placementInfo: \(String(describing: placementInfo))")
-    }
-}
-
-
-extension VrtcalIronsourceAdaptersWrapper: ISRewardedVideoManualDelegate {
-    func rewardedVideoDidLoad() {
-        sdkEventsLogger.log("IronSource rewardedVideoDidLoad")
-    }
-    
-    func rewardedVideoDidFailToLoadWithError(_ error: Error!) {
-        sdkEventsLogger.log("IronSource rewardedVideoDidFailToLoadWithError: \(String(describing: error))")
-    }
-}
-
 
 extension VrtcalIronsourceAdaptersWrapper: ISImpressionDataDelegate {
     func impressionDataDidSucceed(_ impressionData: ISImpressionData!) {
