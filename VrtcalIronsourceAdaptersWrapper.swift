@@ -36,7 +36,7 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     }
     
     func initializeSdk() {
-        sdkEventsLogger.log()
+        appLogger.log()
 
         IronSource.setLevelPlayInterstitialDelegate(levelPlayInterstitialDelegateWrapper)
         IronSource.setLevelPlayRewardedVideoDelegate(levelPlayRewardedVideoDelegateWraper)
@@ -48,7 +48,7 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     }
     
     func handle(adTechConfig: AdTechConfig) {
-        sdkEventsLogger.log("adTechConfig: \(adTechConfig)")
+        appLogger.log("adTechConfig: \(adTechConfig)")
         switch adTechConfig.placementType {
             case .interstitial:
                 IronSource.loadInterstitial()
