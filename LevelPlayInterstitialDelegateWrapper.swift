@@ -10,13 +10,19 @@ import IronSource
 
 class LevelPlayInterstitialDelegateWrapper: NSObject, LevelPlayInterstitialDelegate {
     var sdkEventsLogger: Logger
+    var appLogger: Logger
     
-    init(sdkEventsLogger: Logger) {
+    init(
+        sdkEventsLogger: Logger,
+        appLogger: Logger
+    ) {
         self.sdkEventsLogger = sdkEventsLogger
+        self.appLogger = appLogger
     }
     
     func didLoad(with adInfo: ISAdInfo!) {
-        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didLoad adInfo: \(adInfo!)")
+        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didLoad")
+        appLogger.log("adInfo: \(adInfo!)")
     }
     
     func didFailToLoadWithError(_ error: Error!) {
@@ -24,22 +30,27 @@ class LevelPlayInterstitialDelegateWrapper: NSObject, LevelPlayInterstitialDeleg
     }
     
     func didOpen(with adInfo: ISAdInfo!) {
-        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didOpen adInfo: \(adInfo!)")
+        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didOpen")
+        appLogger.log("adInfo: \(adInfo!)")
     }
     
     func didClose(with adInfo: ISAdInfo!) {
-        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didClose adInfo: \(adInfo!)")
+        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didClose")
+        appLogger.log("adInfo: \(adInfo!)")
     }
     
     func didShow(with adInfo: ISAdInfo!) {
-        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didShow adInfo: \(adInfo!)")
+        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didShow")
+        appLogger.log("adInfo: \(adInfo!)")
     }
     
     func didFailToShowWithError(_ error: (any Error)!, andAdInfo adInfo: ISAdInfo!) {
-        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didFailToShowWithError adInfo: \(adInfo!)")
+        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didFailToShowWithError")
+        appLogger.log("adInfo: \(adInfo!)")
     }
     
     func didClick(with adInfo: ISAdInfo!) {
-        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didClick adInfo: \(adInfo!)")
+        sdkEventsLogger.log("IronSource LevelPlayInterstitialDelegate didClick")
+        appLogger.log("adInfo: \(adInfo!)")
     }
 }

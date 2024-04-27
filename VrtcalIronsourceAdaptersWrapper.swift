@@ -23,7 +23,8 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
         self.delegate = delegate
         
         levelPlayInterstitialDelegateWrapper = LevelPlayInterstitialDelegateWrapper(
-            sdkEventsLogger: sdkEventsLogger
+            sdkEventsLogger: sdkEventsLogger,
+            appLogger: appLogger
         )
 
         levelPlayRewardedVideoDelegateWraper = LevelPlayRewardedVideoDelegateWraper(
@@ -38,13 +39,20 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     func initializeSdk() {
         appLogger.log()
 
+        // This init is for VRTAsSecondary. VRTAsPrimary inits IronSource by itself.
         IronSource.setLevelPlayInterstitialDelegate(levelPlayInterstitialDelegateWrapper)
         IronSource.setLevelPlayRewardedVideoDelegate(levelPlayRewardedVideoDelegateWraper)
         IronSource.setLevelPlayRewardedVideoManualDelegate(levelPlayRewardedVideoManualDelegateWrapper)
         IronSource.add(self)
         
-        // Alternate: 133bd4b31
-        IronSource.initWithAppKey("133bdf7c9", adUnits:[IS_INTERSTITIAL, IS_REWARDED_VIDEO], delegate: self)
+        let appKey: String
+        switch App.current {
+            case .none: appKey = ""
+            case .twitMore: appKey = "133bd4b31"
+            case .vita: appKey = "133bdf7c9"
+        }
+
+        IronSource.initWithAppKey(appKey, adUnits:[IS_INTERSTITIAL, IS_REWARDED_VIDEO], delegate: self)
     }
     
     func handle(adTechConfig: AdTechConfig) {
@@ -65,13 +73,17 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     }
     
     func showInterstitial() -> Bool {
-        if IronSource.hasInterstitial() {
-            IronSource.showInterstitial(with: delegate.viewController)
+        if IronSource.hasRewardedVideo() {
+            IronSource.showRewardedVideo(
+                with: delegate.viewController
+            )
             return true
         }
-        
-        if IronSource.hasRewardedVideo() {
-            IronSource.showRewardedVideo(with: delegate.viewController)
+
+        if IronSource.hasInterstitial() {
+            IronSource.showInterstitial(
+                with: delegate.viewController
+            )
             return true
         }
 
@@ -84,13 +96,14 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
     }
 }
 
-
+// MARK: ISInitializationDelegate
 extension VrtcalIronsourceAdaptersWrapper: ISInitializationDelegate {
     func initializationDidComplete() {
         sdkEventsLogger.log("IronSource Initialized")
     }
 }
 
+// MARK: ISImpressionDataDelegate
 extension VrtcalIronsourceAdaptersWrapper: ISImpressionDataDelegate {
     func impressionDataDidSucceed(_ impressionData: ISImpressionData!) {
         sdkEventsLogger.log("IronSource impressionDataDidSucceed")
