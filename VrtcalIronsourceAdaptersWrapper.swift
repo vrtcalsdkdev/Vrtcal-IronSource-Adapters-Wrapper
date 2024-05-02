@@ -32,7 +32,8 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
         )
         
         levelPlayRewardedVideoManualDelegateWrapper = LevelPlayRewardedVideoManualDelegateWrapper(
-            sdkEventsLogger: sdkEventsLogger
+            sdkEventsLogger: sdkEventsLogger,
+            appLogger: appLogger
         )
     }
     
@@ -49,7 +50,7 @@ class VrtcalIronsourceAdaptersWrapper: NSObject, AdapterWrapperProtocol {
         switch App.current {
             case .none: appKey = ""
             case .twitMore: appKey = "133bd4b31"
-            case .vita: appKey = "133bdf7c9"
+            case .vita: appKey = "133bdf7c9" // VRTAsSecondary
         }
 
         IronSource.initWithAppKey(appKey, adUnits:[IS_INTERSTITIAL, IS_REWARDED_VIDEO], delegate: self)
